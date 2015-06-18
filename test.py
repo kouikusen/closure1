@@ -17,7 +17,6 @@ right = 3
 right_next = 4
 left_symbol = 0
 
-
 def read_file():
 	"""
 	read files,put it into prodc, eliminate \n
@@ -157,7 +156,7 @@ def build_closure1():
 		"""first rule DONE"""
 
 		
-
+		
 		#if right_symbol_next is nonterminal -> add new prodc to answer
 		while True:
 			change = False
@@ -184,17 +183,16 @@ def build_closure1():
 								#if right_next go to new prodc
 								answer_add_lookahead_element(str_prodc_to_add,str_right_symbol_next)
 								change = True
-
+								
 				give_to_child = False
-				str_left_symbol = str_prodc_to_add[left_symbol]
-				str_right_symbol = str_prodc_to_add[str_prodc_to_add.find('*')+1]
-				str_question_lookahead = answer[str_prodc_to_add]
-				if len(str_prodc_to_add) > str_prodc_to_add.find('*')+2:
-					str_right_symbol_next = str_prodc_to_add[str_prodc_to_add.find('*')+2]
-				else:
-					str_right_symbol_next = 'none'
-					give_to_child = True
-
+				
+				s=find_symbols(str_prodc_to_add)
+				str_left_symbol = s[0]
+				str_right_symbol = s[1]
+				str_right_symbol_next = s[2]
+				str_question_lookahead = s[3]
+				give_to_child = s[4]
+				
 			print 'new:'
 			print answer
 			if change == False:
@@ -204,6 +202,21 @@ def build_closure1():
 		print answer
 		print ''
 		answer = {}
+
+def find_symbols(str_prodc_to_add):
+	give_to_child = False
+	str_left_symbol = str_prodc_to_add[left_symbol]
+	str_right_symbol = str_prodc_to_add[str_prodc_to_add.find('*')+1]
+	str_question_lookahead = answer[str_prodc_to_add]
+	if len(str_prodc_to_add) > str_prodc_to_add.find('*')+2:
+		str_right_symbol_next = str_prodc_to_add[str_prodc_to_add.find('*')+2]
+	else:
+		str_right_symbol_next = 'none'
+		give_to_child = True
+	s = [str_left_symbol,str_right_symbol,str_right_symbol_next,str_question_lookahead,give_to_child]
+
+	return s
+
 
 def answer_if_new_element(prodc,element_to_check):
 	"""new -> True"""
