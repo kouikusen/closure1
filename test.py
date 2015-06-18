@@ -155,8 +155,10 @@ def build_closure1():
 		print 'first rule DONE'
 		"""first rule DONE"""
 
-		
-		
+		doneyet = []
+		for aaa in range(0,number_of_prodc+1):
+			doneyet.append(False)
+		doneyet[1] = True
 		#if right_symbol_next is nonterminal -> add new prodc to answer
 		while True:
 			change = False
@@ -183,7 +185,11 @@ def build_closure1():
 								#if right_next go to new prodc
 								answer_add_lookahead_element(str_prodc_to_add,str_right_symbol_next)
 								change = True
-								
+				#doneyet[prodc.find(str_prodc_to_add)] = True
+				p = str_prodc_to_add.partition('*')[0]+str_prodc_to_add.partition('*')[2]
+				print prodc.index(p)
+				doneyet[prodc.index(p)] = True
+				print doneyet
 				give_to_child = False
 				
 				s=find_symbols(str_prodc_to_add)
@@ -195,9 +201,31 @@ def build_closure1():
 				
 			print 'new:'
 			print answer
+			b = False
 			if change == False:
-				print 'break~~~~~~'
+				print 'change'
+				for m in range(1,number_of_prodc+1):
+					if doneyet[m] == False:
+						print 'xchange'
+						str_prodc_to_add = prodc[m].partition('>')[0]+prodc[m].partition('>')[1]+'*'+prodc[m].partition('>')[2]
+						s = find_symbols(str_prodc_to_add)
+						str_left_symbol = s[0]
+						str_right_symbol = s[1]
+						str_right_symbol_next = s[2]
+						str_question_lookahead = s[3]
+						give_to_child = s[4]
+						p = str_prodc_to_add.partition('*')[0]+str_prodc_to_add.partition('*')[2]
+						print prodc.index(p)
+						doneyet[prodc.index(p)] = True
+						print doneyet
+						break
+					elif m == number_of_prodc:
+						b = True
+			if b == True:
+				print doneyet
 				break
+
+		#print doneyet
 		print 'answer: '	
 		print answer
 		print ''
@@ -219,6 +247,7 @@ def find_symbols(str_prodc_to_add):
 
 
 def answer_if_new_element(prodc,element_to_check):
+	global answer
 	"""new -> True"""
 	if answer[prodc].find(element_to_check) == -1:
 		return True
@@ -245,70 +274,13 @@ def answer_add_lookahead_element(prodc,lookahead_to_add):
 	print 'answer_add_lookahead_element('+prodc+' : '+answer[prodc]+')'
 
 
-"""----------FOLLOW----------"""
-def findandbuild_follow_set():
-	global follow
-	for i in range(1,number_of_prodc+1):
-		if i == 1:
-			"""
-			first follow set:follow of S is |
-			"""
-			follow[prodc[i][0]] = '|'
-			if prodc[i][right].isupper() == True:
-				follow[prodc[i][right]] = prodc[i][right_next]
-		else:
-			str_left_symbol = prodc[i][left_symbol]
-			for j in range(right,len(prodc[i])-1):
-				str_right_symbol = prodc[i][j]
-				str_follow_symbol = prodc[i][j+1]
-				if str_right_symbol.isupper():
-					if follow_if_new(str_right_symbol):
-						#if new -> add follow
-						follow[str_right_symbol] = str_follow_symbol
-					elif follow_if_repeat(str_right_symbol,str_follow_symbol):
-						#not new -> if not repeat -> add follow
-						add_follow_element(str_right_symbol,str_follow_symbol)
-	print 'after findandbuild_follow_set() follow:'
-	print follow
-
-def follow_if_new(key):
-	"""
-	new->true
-	"""
-	global follow
-	if key in follow:
-		return False
-	else:
-		return True
-
-def follow_if_repeat(key,test_sym):
-	"""
-	not repeat->true
-	"""
-	global follow
-	if follow[key].find(test_sym) != -1:
-		#repeat->false
-		return False
-	else:
-		#not repeat->true
-		return True
-
-def add_follow_element(key,element_to_add):
-	global follow
-	follow[key]+=','
-	follow[key]+=element_to_add
-
-def str_follow(key):
-	return '{'+follow[key]+'}'
-"""----------FOLLOW----------"""
-
 def main():
 	"""
 	execute defs
 	"""
 	read_file()
 	find_number_of_things()
-	#findandbuild_follow_set()
+
 	build_first_set()
 	print ''
 	build_ques_list()
