@@ -23,6 +23,7 @@ def read_file():
 	"""
 	for line in file_in:
 		prodc.append(line.strip())
+	file_in.close()
 
 def find_number_of_things():
 	"""
@@ -37,6 +38,69 @@ def find_number_of_things():
 	print "number_of_ques: "
 	print number_of_ques
 	print "--------"
+
+"""----------WRITE START----------"""
+
+def write_file():
+	global answer
+	global prodc
+
+	print ''
+	print 'FINAL ANSWER'
+	print answer
+
+	del_repeat_lookahead()
+
+	print '===WRITE FILE START==='
+	p = answer.keys()
+	a = []
+	#print p
+	for i in range(0,len(p)):
+		a.append(p[i].partition('*')[0]+p[i].partition('*')[2])
+		#print a[i]
+	for m in range(1,number_of_prodc+1):
+		for j in range(0,len(p)):
+			if prodc[m] == a[j]:
+				#print p[j]
+				stro = str_output(p[j])
+				print stro
+				file_out.write(stro+'\n')
+	file_out.write('#\n')
+	print ('#')
+	print ('===WRITE FILE END===')
+
+def str_output(answer_prodc):
+	stro = answer_prodc
+	strvl = answer[answer_prodc]
+	stro += ' {'
+	stro += strvl
+	stro += '}'
+	return stro
+
+def del_repeat_lookahead():
+	global answer
+
+	for a  in answer:
+		#print 'a'
+		#print a
+		sp = answer[a]#sp = value of a
+		spli = sp.split(',')
+		#print spli
+		spo = []
+		for i in spli:
+			if not i in spo:
+				spo.append(i)
+		stro = ''
+		for k in spo:
+			stro+=k
+			stro+=','
+		stro = stro.rstrip(',')
+		#print 'stro'
+		#print stro
+		answer[a] = stro
+	#print answer
+
+"""----------WRITE END----------"""
 
 """----------FIRST_START----------"""
 
@@ -100,6 +164,8 @@ def add_first_element(key,element_to_add):
 	first[key]+=element_to_add
 
 """----------FIRST_END----------"""
+
+"""----------CLOSURE1_START----------"""
 
 def build_ques_list():
 	global questions
@@ -226,9 +292,13 @@ def build_closure1():
 				break
 
 		#print doneyet
-		print 'answer: '	
+		#print 'answer: '	
+		#print answer
+		#print ''
+
+		write_file()
+		print 'FINAL ANSWER:'
 		print answer
-		print ''
 		answer = {}
 
 def find_symbols(str_prodc_to_add):
@@ -244,6 +314,8 @@ def find_symbols(str_prodc_to_add):
 	s = [str_left_symbol,str_right_symbol,str_right_symbol_next,str_question_lookahead,give_to_child]
 
 	return s
+
+"""----------CLOSURE1_END----------"""
 
 
 def answer_if_new_element(prodc,element_to_check):
@@ -274,6 +346,9 @@ def answer_add_lookahead_element(prodc,lookahead_to_add):
 	print 'answer_add_lookahead_element('+prodc+' : '+answer[prodc]+')'
 
 
+
+
+
 def main():
 	"""
 	execute defs
@@ -286,6 +361,6 @@ def main():
 	build_ques_list()
 	print ''
 	build_closure1()
+	file_out.close()
+
 main()
-print "prodc:"
-print prodc
