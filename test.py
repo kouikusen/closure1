@@ -9,6 +9,8 @@ global follow
 global first
 global questions
 global answer
+global doneyetl
+doneyetl = {}
 answer={}
 questions = []
 first={}
@@ -201,7 +203,7 @@ def build_closure1():
 		if str_right_symbol.isupper():
 			if_right_symbol_nonterm = True
 
-		#check if there is anythind behind right symbol
+		#check if there is anything behind right symbol
 		#if yes -> make right_symbol_next's first set the next lookahead
 		#if no -> give_to_child
 		if len(que[index_rule]) > i.find('*')+2:
@@ -218,21 +220,21 @@ def build_closure1():
 			answer_new(str_prodc,str_question_lookahead)
 		#give_to_child = False
 		#if_right_symbol_nonterm = False
+		doneyetl[str_prodc] = True
 		print 'first rule DONE'
 		"""first rule DONE"""
 
-		doneyet = []
-		for aaa in range(0,number_of_prodc+1):
-			doneyet.append(False)
-		doneyet[1] = True
 		#if right_symbol_next is nonterminal -> add new prodc to answer
 		while True:
+			b = True
 			change = False
+			ifnext = False
 			if str_right_symbol.isupper():
 				for i in range (1,number_of_prodc+1):
 					#0~number_of_prodc
 					if prodc[i][left_symbol] == str_right_symbol:
 						str_prodc_to_add = prodc[i].partition('>')[0]+prodc[i].partition('>')[1]+'*'+prodc[i].partition('>')[2]
+						
 						if answer_if_new(str_prodc_to_add):
 							if give_to_child:
 								#if give lookahead to child
@@ -251,11 +253,9 @@ def build_closure1():
 								#if right_next go to new prodc
 								answer_add_lookahead_element(str_prodc_to_add,str_right_symbol_next)
 								change = True
-				#doneyet[prodc.find(str_prodc_to_add)] = True
-				p = str_prodc_to_add.partition('*')[0]+str_prodc_to_add.partition('*')[2]
-				print prodc.index(p)
-				doneyet[prodc.index(p)] = True
-				print doneyet
+				
+				doneyetl[str_prodc_to_add] = True
+				print doneyetl
 				give_to_child = False
 				
 				s=find_symbols(str_prodc_to_add)
@@ -265,41 +265,56 @@ def build_closure1():
 				str_question_lookahead = s[3]
 				give_to_child = s[4]
 				
-			print 'new:'
-			print answer
-			b = False
-			if change == False:
-				print 'change'
-				for m in range(1,number_of_prodc+1):
-					if doneyet[m] == False:
-						print 'xchange'
-						str_prodc_to_add = prodc[m].partition('>')[0]+prodc[m].partition('>')[1]+'*'+prodc[m].partition('>')[2]
-						s = find_symbols(str_prodc_to_add)
-						str_left_symbol = s[0]
-						str_right_symbol = s[1]
-						str_right_symbol_next = s[2]
-						str_question_lookahead = s[3]
-						give_to_child = s[4]
-						p = str_prodc_to_add.partition('*')[0]+str_prodc_to_add.partition('*')[2]
-						print prodc.index(p)
-						doneyet[prodc.index(p)] = True
-						print doneyet
-						break
-					elif m == number_of_prodc:
-						b = True
-			if b == True:
-				print doneyet
-				break
+				print 'new:'
+				print answer
 
-		#print doneyet
-		#print 'answer: '	
-		#print answer
-		#print ''
+				if change == False:
+					print 'change'
+					
+					if not doneyetl_ifalldone():
+						for keys in doneyetl:
+							if not doneyetl[keys]:
+								print 'asdawxreqtccte'
+								str_prodc_to_add = keys
+								s = find_symbols(str_prodc_to_add)
+								str_left_symbol = s[0]
+								str_right_symbol = s[1]
+								str_right_symbol_next = s[2]
+								str_question_lookahead = s[3]
+								give_to_child = s[4]
+								#doneyetl[keys] = True
+								break
+			else:
+				break
+			if doneyetl_ifalldone():
+				print 'DONE YET IF ALL DONE'
+				print doneyetl_ifalldone()
+				break
 
 		write_file()
 		print 'FINAL ANSWER:'
 		print answer
 		answer = {}
+
+def del_star(str):
+	return str.partition('*')[0]+str.partition('*')[2]
+
+def doneyetl_ini():
+	global doneyetl
+
+	d = answer.keys()
+	for ok in d:
+		doneyetl[ok] = False
+	print 'doneyetl_ini:'
+	print doneyetl
+
+def doneyetl_ifalldone():
+	s = True
+	ifdone = doneyetl.values()
+	for ifdo in ifdone:
+		if not ifdo:
+			s = False
+	return s
 
 def find_symbols(str_prodc_to_add):
 	give_to_child = False
@@ -336,8 +351,11 @@ def answer_if_new(prodc):
 
 def answer_new(prodc,lookahead):
 	global answer
+	global doneyetl
 	answer[prodc] = lookahead
 	print 'answer_new('+prodc+' : '+lookahead+')'
+
+	doneyetl[prodc] = False
 
 def answer_add_lookahead_element(prodc,lookahead_to_add):
 	global answer
