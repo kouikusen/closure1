@@ -271,19 +271,24 @@ def build_closure1():
 			if change == False:
 				print 'change'
 				for m in range(1,number_of_prodc+1):
+					h = True
 					if doneyet[m] == False:
 						print 'xchange'
 						str_prodc_to_add = prodc[m].partition('>')[0]+prodc[m].partition('>')[1]+'*'+prodc[m].partition('>')[2]
-						s = find_symbols(str_prodc_to_add)
-						str_left_symbol = s[0]
-						str_right_symbol = s[1]
-						str_right_symbol_next = s[2]
-						str_question_lookahead = s[3]
-						give_to_child = s[4]
-						p = str_prodc_to_add.partition('*')[0]+str_prodc_to_add.partition('*')[2]
-						print prodc.index(p)
-						doneyet[prodc.index(p)] = True
-						print doneyet
+						if not answer.get(str_prodc_to_add) == None:
+							s = find_symbols(str_prodc_to_add)
+							str_left_symbol = s[0]
+							str_right_symbol = s[1]
+							str_right_symbol_next = s[2]
+							str_question_lookahead = s[3]
+							give_to_child = s[4]
+							p = str_prodc_to_add.partition('*')[0]+str_prodc_to_add.partition('*')[2]
+							print prodc.index(p)
+							doneyet[prodc.index(p)] = True
+							print doneyet
+							h = False
+							break
+					if h == False:
 						break
 					elif m == number_of_prodc:
 						b = True
